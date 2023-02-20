@@ -1,0 +1,139 @@
+---
+import { COLLECT_CATEGORIES, COLLECT_TAGS } from "@/constant/Collect";
+import { PostsPublicTime } from "@/utils/ParseTime";
+import cfg from "blog.config";
+import type { CollectionEntry } from "astro:content";
+interface Props {
+  data: CollectionEntry<"blog"> | {};
+  body: string;
+}
+
+const { data, body } = Astro.props as CollectionEntry<"blog">,
+  PassTime = parseInt(
+    ((+new Date() - +new Date(data.date)) / 24 / 3600 / 1000).toFixed(0)
+  ),
+  {
+    WebsiteSettings: { base },
+  } = cfg;
+---
+
+{
+  Object.keys(data).length ? (
+    <div class="posts_info">
+      <h1 class="title">{data.title}</h1>
+      <div class="time">
+        <i class="iconfont icon-24gl-calendar" />
+        {PostsPublicTime(data.date)} 发布
+      </div>
+      <div class="info">
+        <i class="iconfont icon-editor" />
+        {(body.length / 1000).toFixed(1)}K 字
+        <i class="iconfont icon-24gl-clockCircle" />
+        {parseInt(body.length / 300 + "") + 1}分钟
+      </div>
+      <div class="categories">
+        {data.categories ? (
+          <i class="iconfont icon-categories">
+            <a
+              href={`${base}/collect/${COLLECT_CATEGORIES}/${data.categories}`}
+            >
+              {data.categories}
+            </a>
+          </i>
+        ) : undefined}
+        {data.tags
+          ? data.tags.map((val) => (
+              <div class="label">
+                <i class="iconfont icon-24gl-tags2">
+                  <a href={`${base}/collect/${COLLECT_TAGS}/${val}`}>{val}</a>
+                </i>
+              </div>
+            ))
+          : undefined}
+      </div>
+      <div class="license">
+        本作品采用
+        <a
+          class="license__link"
+          href={
+            data.licenseLink
+              ? data.licenseLink
+              : "https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.zh-Hans"
+          }
+          target="_blank"
+        >
+          {data.license ? data.license : "CC BY-NC-SA 4.0"}
+        </a>
+        进行许可。
+      </div>
+      {PassTime > 30 ? (
+        <div class="tips">
+          本文距离首次发布已经过去了{" "}
+          {((+new Date() - +new Date(data.date)) / 24 / 3600 / 1000).toFixed(0)}
+          天，请注意文章的时效性！
+        </div>
+      ) : undefined}
+    </div>
+  ) : undefined
+}
+
+<style lang="scss">
+  .posts_info {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    text-align: center;
+    gap: 0.2rem;
+
+    .time {
+      font-size: 0.9rem;
+      color: var(--text-default);
+    }
+
+    .title {
+      font-size: 1.8rem;
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+
+      a {
+        white-space: nowrap;
+      }
+
+      .iconfont.icon-categories {
+        margin-right: 0.4rem;
+
+        span {
+          margin: 0 0.1rem;
+        }
+      }
+    }
+
+    .tips {
+      margin-top: 0.6rem;
+      padding: 0.8rem 1.2rem;
+      background-color: rgba(255, 230, 0, 0.25);
+      border-radius: 0.6rem;
+    }
+  }
+
+  .license {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+
+    .license__link {
+      text-decoration: underline;
+    }
+  }
+</style>

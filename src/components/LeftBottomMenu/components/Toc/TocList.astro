@@ -1,0 +1,107 @@
+---
+import type { MarkdownHeading } from "astro";
+import { getCollection } from "astro:content";
+import "tocbot/src/scss/tocbot.scss";
+import "@/styles/toc.scss";
+
+interface Props {
+  slugs?: MarkdownHeading[];
+}
+
+const blog = await getCollection("blog", ({ data }) => data.draft !== true);
+
+const { name } = Astro.params,
+  { slugs: propSlugs } = Astro.props;
+
+let slugs = propSlugs,
+  target = null;
+if (!slugs) {
+  for (let i = 0; i < blog.length; i++) {
+    const e = blog[i];
+    if (e.data.title.indexOf(name!) != -1) {
+      target = e;
+      break;
+    }
+  }
+
+  const r = await target?.render();
+  slugs = r?.headings;
+}
+---
+
+<div class="toc_list" id="TocList" data-hidden="true">
+  <div class="white_module">
+    <div class="module_title">导航</div>
+    <div class="toc_container"></div>
+  </div>
+</div>
+
+<script>
+  import * as tocbot from "tocbot";
+  tocbot.init({
+    // Where to render the table of contents.
+    tocSelector: ".toc_container",
+    // Where to grab the headings to build the table of contents.
+    contentSelector: ".markdown-body",
+    // Which headings to grab inside of the contentSelector element.
+    headingSelector: "h1, h2, h3",
+    // For headings inside relative or absolute positioned containers within content.
+    hasInnerContainers: true,
+    headingsOffset: 80,
+    scrollSmoothOffset: -80,
+    includeTitleTags: true,
+    onClick: () => {
+      const t = document.querySelector("#TocList")!;
+      if (
+        window.innerWidth < 992 &&
+        t.getAttribute("data-hidden") === "false"
+      ) {
+        t.setAttribute("class", t.getAttribute("class")!.replace("show", ""));
+        t.setAttribute("data-hidden", "true");
+      }
+    },
+  });
+</script>
+
+<style lang="scss">
+  .toc_list {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 15rem;
+    min-height: 10rem;
+    max-height: 25rem;
+    transform: translateX(110%) translateY(-50%);
+    transition: transform 0.3s;
+
+    .white_module {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .toc_container {
+      overflow-y: scroll;
+      /* webkit */
+      &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+
+      /* firefox */
+      scrollbar-width: none;
+
+      /* ie */
+      -ms-overflow-style: none;
+
+      :global(a) {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
+
+    &.show {
+      transform: translateX(0) translateY(-50%);
+    }
+  }
+</style>

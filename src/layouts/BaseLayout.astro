@@ -1,0 +1,90 @@
+---
+import "@/styles/global.scss";
+import HeadMeta from "@/components/HeadMeta.astro";
+import Header from "@/components/Header/index.astro";
+import Background from "@/components/Background/index.astro";
+import Footer from "@/components/Footer/index.astro";
+import cfg from "blog.config";
+import GetCurrentPageSetting from "@/utils/GetCurrentPageSetting";
+import LeftBottomMenu from "@/components/LeftBottomMenu/index.astro";
+
+export interface Props {
+  /** 当前页面标题 */
+  title?: string;
+}
+
+const { header, footer, background, setMinHeight } = GetCurrentPageSetting(
+  Astro.url
+);
+
+const { title } = Astro.props;
+
+const SetMinHeightFactory = () => {
+  switch (setMinHeight) {
+    case "content":
+      return "get_min_height";
+
+    case "fill":
+      return "w100 h100 of";
+
+    default:
+      return "";
+  }
+};
+
+const {
+  color: { light, dark },
+} = cfg;
+---
+
+<style
+  define:vars={{
+    "l-background-default": light.backgroundDefault,
+    "l-background-active-default": light.backgroundActiveDefault,
+    "l-text-default": light.textDefault,
+    "l-tips-default": light.tipsDefault,
+    "d-background-default": dark.backgroundDefault,
+    "d-background-active-default": dark.backgroundActiveDefault,
+    "d-text-default": dark.textDefault,
+    "d-tips-default": dark.tipsDefault,
+  }}
+>
+  body {
+    --background-default: var(--l-background-default);
+    --background-active-default: var(--l-background-active-default);
+    --text-default: var(--l-text-default);
+    --tips-default: var(--l-tips-default);
+  }
+
+  html.dark > body {
+    --background-default: var(--d-background-default);
+    --background-active-default: var(--d-background-active-default);
+    --text-default: var(--d-text-default);
+    --tips-default: var(--d-tips-default);
+  }
+</style>
+
+<style lang="scss">
+  .get_min_height {
+    overflow: hidden;
+    min-height: calc(100% - 9rem);
+    padding-top: 4rem;
+  }
+</style>
+
+<html lang="zh">
+  <head>
+    <HeadMeta title={title} />
+    <link rel="icon" href={cfg.WebsiteSettings.base + "/favicon.svg"} />
+  </head>
+  <body>
+    {header!.hidden ? null : <Header PositionTitle={title} />}
+    <div id="ScrollMark"></div>
+    <main class={`${SetMinHeightFactory()}`}>
+      <slot />
+    </main>
+    <Background cfg={background!} />
+    {footer!.hidden ? null : <Footer content={footer!.content!} />}
+    <LeftBottomMenu components={["BackToTop"]} />
+  </body>
+</html>

@@ -1,0 +1,17 @@
+- [x] blog 页面对接 content 数据
+- [x] collect 数据对接
+- [x] collect 页面修复
+- [x] header 的白天、夜间模式切换同步
+- [x] header 分类数据切换
+- [ ] 文章封面同步
+- [ ] 头像路径处理
+- [ ] search 接口处理
+- [ ] 评论区制作
+- [x] posts 页面文章标题锚点跳转
+- [x] 全局 js 注入
+- [x] 全局 css 注入
+- [ ] UI 美化
+- [ ] 自定义主页制作
+- [ ] 修复 bug：`src\components\Header\RightMenu\_constant\ItemList.ts`
+- [ ] 修复 bug：生成静态路径时崩溃的问题
+- [ ] （可选）文章目录懒加载或根据条件加载

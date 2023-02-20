@@ -1,0 +1,79 @@
+---
+// import { DARK_MODE } from "@/constant/LocalStorage";
+---
+
+<div class="theme_switch flex_center" data-theme-switch>
+  <i class="iconfont icon-sun1"></i>
+  <i class="iconfont icon-moon"></i>
+</div>
+
+<script>
+  /**
+   * DARK_MODE = 'dark'
+   */
+  const DARK_MODE = "dark";
+
+  const wrapper = document.querySelector("[data-theme-switch]")!;
+  if (wrapper) {
+    const t = wrapper.querySelectorAll(".iconfont");
+
+    function SwitchState(choose: boolean) {
+      document
+        .querySelector("html")!
+        .setAttribute("class", choose ? "dark" : "");
+      let finalState = "",
+        sourceClass = wrapper.getAttribute("class")!;
+      if (choose) {
+        finalState = sourceClass + " dark";
+      } else if (/dark/.test(sourceClass)) {
+        finalState = sourceClass.replaceAll("dark", "");
+      }
+      wrapper.setAttribute("class", finalState);
+
+      localStorage.setItem(DARK_MODE, choose + "");
+    }
+
+    let FinalState = localStorage.getItem(DARK_MODE) === "true";
+
+    if (FinalState)
+      wrapper.setAttribute("class", wrapper.getAttribute("class") + " dark");
+
+    t.forEach((v) =>
+      v.addEventListener("click", () => {
+        SwitchState((FinalState = !FinalState));
+      })
+    );
+  }
+</script>
+
+<style lang="scss">
+  .theme_switch {
+    padding-left: 0.4rem;
+
+    .iconfont {
+      color: var(--text-default);
+      cursor: pointer;
+
+      &:hover {
+        color: var(--tips-default);
+      }
+
+      &.icon-sun1 {
+        display: block;
+      }
+
+      &.icon-moon {
+        display: none;
+      }
+    }
+
+    &.dark {
+      .icon-sun1 {
+        display: none;
+      }
+      .icon-moon {
+        display: block;
+      }
+    }
+  }
+</style>

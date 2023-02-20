@@ -1,0 +1,95 @@
+---
+import { PAGE_SIZE } from "@/constant/Pagination";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import SortArticle, { SortCollectArticles } from "@/utils/SortArticle";
+import ArticleList from "@/components/Pages/blog/ArticleList.astro";
+import BlogInfo from "@/components/BlogInfo.astro";
+import Pagination from "@/components/Pagination/Pagination.astro";
+import type Frontmatter from "@/declare/Frontmatter";
+import PaginationItemFactory from "@/components/Pagination/PaginationItemFactory";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths({ paginate }: any) {
+  // 用 fetch()、Astro.glob() 等加载你的数据
+  const res = SortCollectArticles<"blog">(
+    await getCollection("blog", ({ data }) => data.draft !== true)
+  );
+
+  // 返回包含分页的所有帖子的路由集合
+  return paginate(res, { pageSize: PAGE_SIZE });
+}
+const res = SortCollectArticles<"blog">(
+  await getCollection("blog", ({ data }) => data.draft !== true)
+);
+
+// const e = await getCollection('blog')
+
+const { page } = Astro.props,
+  { page: RoutePage } = Astro.params,
+  paramsCurrentPage = parseInt(RoutePage!) ? parseInt(RoutePage!) : 1;
+
+const FinalList = res.slice(
+  (paramsCurrentPage - 1) * PAGE_SIZE,
+  paramsCurrentPage * PAGE_SIZE
+);
+---
+
+<BaseLayout title={`博客 - `}>
+  <div class="blog">
+    <div class="wrapper">
+      <div class="left_list">
+        <ArticleList ListData={FinalList || []} />
+      </div>
+      <div class="right_info">
+        <BlogInfo />
+      </div>
+      <Pagination
+        currentPage={page ? page.currentPage : paramsCurrentPage}
+        maxPage={Math.ceil(res.length / PAGE_SIZE)}
+        path="/blog"
+        PaginationItemFactory={PaginationItemFactory}
+      />
+    </div>
+  </div>
+</BaseLayout>
+
+<style lang="scss">
+  .blog {
+    display: flex;
+    justify-content: center;
+    padding-top: 2rem;
+
+    .wrapper {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: space-between;
+      width: 55%;
+      min-width: 60rem;
+
+      .left_list {
+        width: 72%;
+      }
+      .right_info {
+        width: 26%;
+        margin-left: 2%;
+      }
+    }
+  }
+
+  @media screen and (max-width: 992px) {
+    .blog {
+      .wrapper {
+        width: 90%;
+        min-width: 10rem;
+
+        .left_list {
+          width: 100%;
+        }
+
+        .right_info {
+          display: none;
+        }
+      }
+    }
+  }
+</style>

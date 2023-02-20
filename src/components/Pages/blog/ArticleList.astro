@@ -1,0 +1,187 @@
+---
+import cfg from "blog.config";
+import ParseTime from "@/utils/ParseTime";
+import { COLLECT_TAGS } from "@/constant/Collect";
+import type { CollectionEntry } from "astro:content";
+export interface Props {
+  ListData: CollectionEntry<"blog">[];
+}
+const {
+  WebsiteSettings: { base },
+} = cfg;
+
+let { ListData = [], class: className } = Astro.props;
+---
+
+{
+  ListData.map(({ data }) => {
+    return (
+      <div class={`item ${data.index_img ? "img" : ""} ${className}`}>
+        {data.index_img ? (
+          <a class="img_wrapper" href={`${base}/posts/${data.title}`}>
+            <img src={`${base}${data.index_img}`} alt={data.title} />
+          </a>
+        ) : undefined}
+        <div class="info">
+          <a class="title" href={`${base}/posts/${data.title}`}>
+            {data.title}
+          </a>
+          {data.description ? (
+            <a class="brief" href={`${base}/posts/${data.title}`}>
+              {data.description}
+            </a>
+          ) : undefined}
+          <div class="class_info">
+            <div class="time">
+              <i class="iconfont icon-24gl-calendar" />
+              {ParseTime(data.date)}
+            </div>
+            <div class="tags">
+              {data.tags?.map((val: string, i: number) => {
+                if (i > 6) return null;
+                return (
+                  <a class="tag_item" href={`/collect/${COLLECT_TAGS}/${val}`}>
+                    <i class="iconfont icon-24gl-tags2" />
+                    <span>{val}</span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  })
+}
+
+<style lang="scss">
+  .item {
+    display: flex;
+    margin-bottom: 1.4rem;
+    padding: 0;
+    background-color: var(--background-default);
+    border-radius: 0.6rem;
+    box-shadow: 0 0 10px 5px hsla(0, 0%, 37%, 0.3);
+    transition: box-shadow 0.3s;
+    overflow: hidden;
+
+    .img_wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      overflow: hidden;
+
+      img {
+        height: 12rem;
+        object-fit: cover;
+      }
+    }
+
+    .info {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 8rem;
+      padding: 0.8rem 1.2rem;
+      color: var(--text-default);
+
+      .title {
+        width: 100%;
+        font-weight: 700;
+        font-size: 1.4rem;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        cursor: pointer;
+      }
+
+      .brief {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        opacity: 0.8;
+      }
+
+      .class_info {
+        .time {
+          margin-bottom: 0.1rem;
+          font-size: 0.9em;
+          opacity: 0.7;
+        }
+
+        .tags {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          width: 100%;
+          column-gap: 0.4rem;
+
+          .tag_item {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+
+            .iconfont {
+              position: relative;
+              top: 0.06rem;
+              font-size: 0.9em;
+            }
+
+            span {
+              font-size: 0.96em;
+            }
+          }
+        }
+      }
+    }
+
+    &.img {
+      .info {
+        width: 61.8%;
+      }
+    }
+
+    &.empty_img {
+      height: 10rem;
+
+      .img_wrapper {
+        width: 0;
+      }
+
+      .info {
+        width: 100%;
+      }
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px 5px hsla(0, 0%, 37%, 0.6);
+    }
+  }
+
+  @media screen and (max-width: 992px) {
+    .item {
+      flex-flow: column nowrap;
+
+      .img_wrapper {
+        img {
+          width: 100%;
+        }
+      }
+
+      &.img {
+        .info {
+          width: 100%;
+
+          .brief {
+            margin: 0.4rem 0;
+          }
+        }
+      }
+    }
+  }
+</style>

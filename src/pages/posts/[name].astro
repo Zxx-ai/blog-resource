@@ -1,0 +1,57 @@
+---
+import MarkdownLayout from "@/layouts/MarkdownLayout.astro";
+import BlogInfo from "@/components/BlogInfo.astro";
+import PostsInfo from "@/components/Pages/posts/PostsInfo.astro";
+import WhiteModule from "@/components/WhiteModule.astro";
+import { CollectionEntry, getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const res = (await getCollection("blog", ({ data }) => data.draft !== true)).map((entry) => ({
+    params: { name: entry.data.title },
+    props: { entry },
+  }));    
+  return res
+}
+
+interface Props {
+  // Optionally use `CollectionEntry` for type safety
+  entry: CollectionEntry<"blog">;
+}
+
+const blog = await getCollection("blog", ({ data }) => data.draft !== true);
+
+
+const { name } = Astro.params;
+
+let target = null;
+for (let i = 0; i < blog.length; i++) {
+  const e = blog[i]
+  if (e.data.title.indexOf(name!) === 0) {
+    target = e
+    break
+  }
+}
+
+const r = await target?.render()
+let Content = r?.Content, slugs = r?.headings
+---
+
+<MarkdownLayout content={target ? target.data : {}}>
+  <WhiteModule slot="before-markdown">
+    <PostsInfo data={target ? target.data : {}} body={target ? target.body : ''} />
+  </WhiteModule>
+  {
+    Content ? (
+      <Content />
+    ) : (
+      <></>
+    )
+  }
+  <BlogInfo slot="after-markdown" horizontal={true} />
+</MarkdownLayout>
+
+<style lang="scss" is:global>
+  .white_module {
+    margin-bottom: 1rem;
+  }
+</style>

@@ -1,0 +1,84 @@
+---
+import type { CollectionEntry } from "astro:content";
+import ParseTime from "@/utils/ParseTime";
+import cfg from "blog.config";
+
+// maybe need to update when add new collect
+interface Props {
+  data: CollectionEntry<"blog">[];
+  currentIndex: number;
+}
+const LIST_MAX_ITEM_COUNT = cfg.pages.collect!.PageArticleCount!,
+  { data, currentIndex } = Astro.props,
+  articleFrom = (currentIndex - 1) * LIST_MAX_ITEM_COUNT,
+  finalData = data.slice(articleFrom, articleFrom + LIST_MAX_ITEM_COUNT);
+
+// if (finalData.length < 1) Astro.redirect("/404");
+---
+
+<div class="list_area">
+  <h3 class="count">
+    共计 {data.length} 篇文章，当前为第 {articleFrom + 1}~{
+      articleFrom + finalData.length
+    } 篇文章
+  </h3>
+  <ul>
+    {
+      finalData.map(({ data: { title, date } }) => (
+        <li>
+          <a href={`${cfg.WebsiteSettings.base}/posts/${title}`}>
+            <span class="text_nowrap w70">{title}</span>
+            <div class="time">{ParseTime(date)}</div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style lang="scss">
+  .list_area {
+    margin: 2rem 3rem;
+
+    ul {
+      margin: 1.6rem;
+
+      li {
+        list-style: none;
+        transition: background-color 0.3s;
+
+        a {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          padding: 0.6rem 1.2rem;
+
+          .time {
+            width: 30%;
+            text-align: right;
+          }
+        }
+
+        &:hover {
+          background-color: var(--background-active-default);
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 992px) {
+    .list_area {
+      margin: 2rem 1rem;
+
+      ul {
+        margin: 1.6rem 0;
+
+        li {
+          a {
+            padding: 0.6rem;
+          }
+        }
+      }
+    }
+  }
+</style>

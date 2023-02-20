@@ -1,0 +1,51 @@
+---
+import type Frontmatter from "@/declare/Frontmatter";
+import { getCollection } from "astro:content";
+
+const ArticleList = await getCollection(
+  "blog",
+  ({ data }) => data.draft !== true
+);
+let tagSet = new Set(),
+  categorySet = new Set();
+
+ArticleList.forEach(({ data: { tags, categories } }) => {
+  if (tags) tags.forEach((val) => tagSet.add(val));
+  if (categories) categorySet.add(categories);
+});
+const list = [
+  ["文章", ArticleList.length],
+  ["标签", tagSet.size],
+  ["归档", categorySet.size],
+];
+---
+
+<div class="status">
+  {
+    list.map((val) => (
+      <div class="status_item">
+        <div class="title">{val[0]}</div>
+        <div class="count">{val[1]}</div>
+      </div>
+    ))
+  }
+</div>
+
+<style lang="scss">
+  .status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .status_item {
+      text-align: center;
+
+      .title {
+      }
+      .count {
+        font-weight: 700;
+      }
+    }
+  }
+</style>

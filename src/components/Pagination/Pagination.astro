@@ -1,0 +1,124 @@
+---
+import type { PaginationItem } from "@/declare/Pagination";
+import BasePaginationItemFactory from "./PaginationItemFactory";
+import cfg from "blog.config";
+
+export interface Props {
+  currentPage: number;
+  maxPage: number;
+  /** 路径前缀，以 `/` 开头 */
+  path: string;
+  PaginationItemFactory?: (
+    currentPage: number,
+    maxPage: number
+  ) => PaginationItem[];
+}
+
+const { currentPage, maxPage, PaginationItemFactory, path } = Astro.props,
+  FinalFactory = PaginationItemFactory
+    ? PaginationItemFactory
+    : BasePaginationItemFactory;
+const ListData = FinalFactory(currentPage, maxPage),
+  {
+    WebsiteSettings: { base },
+  } = cfg;
+---
+
+<link
+  rel="stylesheet"
+  href={`${cfg.WebsiteSettings.base}/fonts/posts/iconfont.css`}
+/>
+<div class="pagination">
+  {
+    currentPage == 1 ? (
+      <div class="arrow disabled">
+        <i class="iconfont icon-arrowleft" />
+      </div>
+    ) : (
+      <a
+        class="arrow"
+        href={
+          currentPage == 1 ? undefined : `${base}${path}/${currentPage - 1}`
+        }
+        aria-label="Prev Page"
+      >
+        <i class="iconfont icon-arrowleft" />
+      </a>
+    )
+  }
+  {
+    ListData.map((val) => {
+      return (
+        <a
+          class={`page_item${currentPage == val.index ? " active" : ""}`}
+          href={`${base}${path}/${val.index}`}
+        >
+          {val.content}
+        </a>
+      );
+    })
+  }
+  {
+    currentPage == maxPage ? (
+      <div class="arrow disabled">
+        <i class="iconfont icon-arrowright" />
+      </div>
+    ) : (
+      <a
+        class="arrow"
+        href={
+          currentPage == maxPage
+            ? undefined
+            : `${base}${path}/${currentPage + 1}`
+        }
+        aria-label="Next Page"
+      >
+        <i class="iconfont icon-arrowright" />
+      </a>
+    )
+  }
+</div>
+
+<style lang="scss">
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 4rem;
+    margin-bottom: 1rem;
+    border-radius: 0.6rem;
+    color: var(--text-default);
+    background-color: var(--background-default);
+    box-shadow: 0 0 10px 5px hsla(0deg, 0%, 37%, 0.3);
+
+    .page_item {
+      width: 2rem;
+      height: 2rem;
+      line-height: 2rem;
+      margin: 0 0.2rem;
+      text-align: center;
+      font-size: 0.9rem;
+
+      &.active {
+        background-color: var(--background-active-default);
+      }
+    }
+
+    .arrow {
+      width: 2rem;
+      height: 2rem;
+      line-height: 2rem;
+      text-align: center;
+
+      .iconfont {
+        font-size: 1.2rem;
+      }
+
+      &.disabled {
+        color: #888 !important;
+        cursor: not-allowed;
+      }
+    }
+  }
+</style>

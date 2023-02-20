@@ -1,0 +1,74 @@
+---
+import cfg from "blog.config";
+import StatusInfo from "./status/index.astro";
+import SocialLink from "./SocialLink/index.astro";
+export interface Props {
+  horizontal?: boolean;
+}
+const { horizontal } = Astro.props;
+---
+
+<div class={`personal_info ${horizontal ? "horizontal" : "vertical"}`}>
+  <div class="img_wrapper">
+    <img src={cfg.WebsiteSettings.base + cfg.UserInfo.avatar!} alt="avatar" />
+  </div>
+  <div class="info_wrapper">
+    <div class="name">{cfg.UserInfo.name}</div>
+    <StatusInfo />
+    <SocialLink />
+  </div>
+</div>
+
+<style lang="scss">
+  .personal_info {
+    display: flex;
+    height: 100%;
+
+    &.horizontal {
+      height: 100%;
+      .img_wrapper {
+        height: 100%;
+        img {
+          height: 100%;
+        }
+      }
+    }
+
+    &.vertical {
+      flex-flow: column nowrap;
+      text-align: center;
+
+      .img_wrapper {
+        height: 12rem;
+        padding: 0.6rem 1rem;
+      }
+    }
+
+    .img_wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      padding: 1rem;
+
+      img {
+        object-fit: contain;
+        height: 90%;
+        border-radius: 100vh;
+      }
+    }
+    .info_wrapper {
+      flex: 1;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding-top: 1rem;
+
+      .name {
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+    }
+  }
+</style>
