@@ -12,29 +12,29 @@ import RunJsonServer from './src/_intergration/RunJsonServer'
 export default defineConfig({
   // site: 'https://qingxia-ela.github.io',
   // base: '/Shiina-Astro-Blog',
-  // integrations: [mdx(), sitemap(), vue(), image({
-  //   serviceEntryPoint: '@astrojs/image/sharp'
-  // }), InjectJSCSS(), BuildSearchIndex(), RunJsonServer()],
-  // vite: {
-  //   resolve: {
-  //     alias: [{
-  //       find: '@/',
-  //       replacement: 'src/'
-  //     }]
-  //   },
-  //   server: {
-  //     host: true
-  //   }
-  // },
-  // markdown: {
-  //   shikiConfig: {
-  //     theme: 'dracula',
-  //     langs: [],
-  //     wrap: true
-  //   }
-  // },
-  // output: 'server',
-  // adapter: node({
-  //   mode: 'standalone'
-  // })
+  integrations: [mdx(), sitemap(), vue(), image({
+    serviceEntryPoint: '@astrojs/image/sharp'
+  }), InjectJSCSS(), BuildSearchIndex(), RunJsonServer()],
+  vite: {
+    resolve: {
+      alias: [{
+        find: '@/',
+        replacement: 'src/'
+      }]
+    },
+    server: {
+      host: true
+    }
+  },
+  markdown: {
+    shikiConfig: {
+      theme: 'dracula',
+      langs: [],
+      wrap: true
+    }
+  },
+  output: 'server',
+  adapter: node({
+    mode: 'standalone'
+  })
 });
