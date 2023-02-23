@@ -6,7 +6,7 @@ export default defineBlogConfig({
   PageDefaultSettings: {
     background: {
       type: 'photo',
-      content: '/public/1.jpg',
+      content: '/avatar/1.jpg',
     },
     footer: {
       content: [
