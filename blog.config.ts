@@ -5,8 +5,8 @@ const site = `https://zxx-ai.github.io`, base = `/blog-resource`
 export default defineBlogConfig({
   PageDefaultSettings: {
     background: {
-      type: 'fade',
-      content: `url(/source/Images/1.jpg)`,
+      type: 'photo',
+      content: '/public/1.jpg',
     },
     footer: {
       content: [
