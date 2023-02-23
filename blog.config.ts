@@ -1,6 +1,6 @@
 import defineBlogConfig from "./src/declare/defineBlogConfig";
 
-const site = `https://qingxia-ela.github.io`, base = `/Shiina-Astro-Blog`
+const site = `https://zxx-ai.github.io`, base = `/blog-resource`
 
 export default defineBlogConfig({
   PageDefaultSettings: {
